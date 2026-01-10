@@ -40,5 +40,5 @@ pip install -r requirements.txt
 
 This project is licensed under the MIT License.
 
-This repository uses DeepSeek-OCR as an external dependency https://github.com/deepseek-ai/DeepSeek-OCR.git.
+This repository uses DeepSeek-OCR as an external dependency (https://github.com/deepseek-ai/DeepSeek-OCR.git).
 All rights related to DeepSeek belong to their respective authors.
