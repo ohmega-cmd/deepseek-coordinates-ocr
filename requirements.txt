@@ -1,0 +1,15 @@
+transformers==4.46.3
+tokenizers==0.20.3
+accelerate>=0.27.0
+einops
+easydict
+addict
+Pillow
+numpy
+opencv-python
+PyMuPDF
+img2pdf
+safetensors
+tqdm
+
+
