@@ -26,14 +26,18 @@ pip install -r requirements.txt
 ```
 ## Prompts examples
 
-document: <image>\n<|grounding|>Convert the document to markdown.
-other image: <image>\n<|grounding|>OCR this image.
-without layouts: <image>\nFree OCR.
-figures in document: <image>\nParse the figure.
-general: <image>\nDescribe this image in detail.
-rec: <image>\nLocate <|ref|>xxxx<|/ref|> in the image.
-'先天下之忧而忧'
-License
+## Prompts examples
+```python
+# document: <image>\n<|grounding|>Convert the document to markdown.
+# other image: <image>\n<|grounding|>OCR this image.
+# without layouts: <image>\nFree OCR.
+# figures in document: <image>\nParse the figure.
+# general: <image>\nDescribe this image in detail.
+# rec: <image>\nLocate <|ref|>xxxx<|/ref|> in the image.
+# '先天下之忧而忧'
+```
+
+## License
 
 This project is licensed under the MIT License.
 
