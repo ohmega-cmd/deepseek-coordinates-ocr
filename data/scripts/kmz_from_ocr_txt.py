@@ -9,11 +9,11 @@ import re
 # CONFIGURAÇÃO
 # ============================================================
 
-TXT_OCR = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/resultado_SAT.txt"
+TXT_OCR = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/resultado_FO.txt"
 KMZ_MARCOS = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/KM_BR163.kmz"
 
-KMZ_SAIDA = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/testes/pontos_imagens_referenciados.kmz"
-EXCEL_SAIDA = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/testes/pontos_imagens_referenciados.xlsx"
+KMZ_SAIDA = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/testes/pontos_imagens_referenciados_FO.kmz"
+EXCEL_SAIDA = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/testes/pontos_imagens_referenciados_FO.xlsx"
 
 # ============================================================
 # FUNÇÃO HAVERSINE
@@ -149,8 +149,7 @@ for p in pontos:
     # Excel
     linhas_excel.append({
         "Imagem": p["image"],
-        "KM_Base": km_base,
-        "Distancia_m": dist_m,
+        "KM": f"KM {km_base}+{dist_m:03d}",
         "Latitude": round(p["lat"], 6),
         "Longitude": round(p["lon"], 6)
     })
