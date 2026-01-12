@@ -9,7 +9,7 @@ import re
 # CONFIGURAÇÃO
 # ============================================================
 
-TXT_OCR = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/testes/output/resultado_CFTV.txt"
+TXT_OCR = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/resultado_SAT.txt"
 KMZ_MARCOS = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/KM_BR163.kmz"
 
 KMZ_SAIDA = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/testes/pontos_imagens_referenciados.kmz"
