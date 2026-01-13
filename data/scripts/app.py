@@ -9,14 +9,16 @@ from transformers import AutoTokenizer, AutoModel
 from ocr_core import process_image
 
 # ============================================================
-# ESTILO GLOBAL (TAMANHO DE FONTE)
+# AJUSTES VISUAIS
 # ============================================================
 
-IMAGE_DISPLAY_WIDTH = 640   # largura da imagem em pixels
+IMAGE_DISPLAY_WIDTH = 740
 
-FONT_SIZE_BASE = 20
-FONT_SIZE_CODE = 20
-FONT_SIZE_TITLE = 24
+FONT_SIZE_BASE = 25
+FONT_SIZE_CODE = 25
+FONT_SIZE_TITLE = 30
+
+LOGO = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/logo_azul.jpeg"
 
 st.markdown(
     f"""
@@ -24,11 +26,9 @@ st.markdown(
     html, body, [class*="css"] {{
         font-size: {FONT_SIZE_BASE}px;
     }}
-
     code {{
         font-size: {FONT_SIZE_CODE}px;
     }}
-
     h1 {{
         font-size: {FONT_SIZE_TITLE}px;
     }}
@@ -41,9 +41,9 @@ st.markdown(
 # CONFIGURAÇÕES FIXAS
 # ============================================================
 
-IMAGES_DIR = "/home/rogerio/PycharmProjects/PythonProject3/DeepSeek-OCR/data/scripts/anna/CFTV-VISTORIAS"
+IMAGES_DIR = "/home/rogerio/Imagens/fotos_para_treinamento"
 OUTPUT_DIR = "/home/rogerio/PycharmProjects/deepseek-coordinates-ocr/data/testes/output"
-OUTPUT_TXT = os.path.join(OUTPUT_DIR, "resultado_CFTV.txt")
+OUTPUT_TXT = os.path.join(OUTPUT_DIR, "resultado.txt")
 
 MODEL_NAME = "deepseek-ai/DeepSeek-OCR"
 
@@ -63,10 +63,16 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Extração de Coordenadas - OCR")
+# LOGO + TÍTULO
+col_logo, col_title = st.columns([1, 4])
+with col_logo:
+    if os.path.isfile(LOGO):
+        st.image(LOGO, width=380)
+with col_title:
+    st.title("Extração de Coordenadas - OCR")
 
 # ============================================================
-# CARREGAR MODELO (UMA VEZ)
+# CARREGAR MODELO
 # ============================================================
 
 @st.cache_resource
@@ -89,15 +95,15 @@ def load_model():
     model.eval()
     return tokenizer, model
 
-with st.spinner("Carregando modelo DeepSeek-OCR..."):
+with st.spinner("Carregando modelo IA - OCR..."):
     tokenizer, model = load_model()
 
 # ============================================================
-# VALIDAR PASTA DE IMAGENS
+# VALIDAR IMAGENS
 # ============================================================
 
 if not os.path.isdir(IMAGES_DIR):
-    st.error(f"Pasta de imagens não encontrada:\n{IMAGES_DIR}")
+    st.error(f"Pasta não encontrada:\n{IMAGES_DIR}")
     st.stop()
 
 image_names = sorted(
@@ -108,14 +114,10 @@ image_names = sorted(
     key=lambda x: os.path.getsize(os.path.join(IMAGES_DIR, x))
 )
 
-if not image_names:
-    st.warning("Nenhuma imagem encontrada na pasta.")
-    st.stop()
-
 st.info(f"{len(image_names)} imagens encontradas.")
 
 # ============================================================
-# CONTROLE DE EXECUÇÃO
+# CONTROLE
 # ============================================================
 
 if "running" not in st.session_state:
@@ -123,8 +125,6 @@ if "running" not in st.session_state:
 
 if st.button("Iniciar processamento"):
     st.session_state.running = True
-
-    # limpa o arquivo ANTES de começar
     with open(OUTPUT_TXT, "w", encoding="utf-8") as f:
         f.write("")
 
@@ -166,27 +166,21 @@ if st.session_state.running:
 
         line = f"{image_name}|{coord}"
 
-        # ============================
-        # SALVAR TXT (INCREMENTAL)
-        # ============================
         with open(OUTPUT_TXT, "a", encoding="utf-8") as f:
             f.write(line + "\n")
 
-        # ESQUERDA – SUBSTITUI A IMAGEM
+        # FRONTEND MOSTRA IMAGEM COLORIDA
         image_placeholder.image(
-            Image.open(image_path),
+            Image.open(image_path).convert("RGB"),
             caption=image_name,
             width=IMAGE_DISPLAY_WIDTH
         )
 
-        # DIREITA – INFO
         with info_placeholder.container():
             st.subheader(f"Progresso: {idx}/{total}")
             progress.progress(idx / total)
 
-            st.write("Resultado:")
             st.code(line)
-
             st.write(f"Tempo da imagem: {elapsed:.1f} s")
             st.write(f"Tempo médio: {avg:.1f} s")
             st.write(f"Estimativa restante: {eta/60:.1f} min")
@@ -195,5 +189,8 @@ if st.session_state.running:
 
     st.success("Processamento finalizado.")
     st.session_state.running = False
-
     st.info(f"Resultado salvo em:\n{OUTPUT_TXT}")
+    del model
+    del tokenizer
+    torch.cuda.empty_cache()
+    st.info("GPU liberada")

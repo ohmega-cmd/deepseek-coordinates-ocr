@@ -2,7 +2,10 @@
 import re
 import io
 import sys
+import os
+import tempfile
 import torch
+from PIL import Image
 
 # ============================================================
 # REGEX + NORMALIZAÇÃO
@@ -40,13 +43,22 @@ def process_image(
     base_size: int,
     image_size: int,
     crop_mode: bool,
-    output_path: str = "/tmp/deepseek_ocr"
+    output_path: str
 ) -> str:
     """
-    Executa OCR em UMA imagem e retorna:
-    - 'LAT LON'
-    - ou 'NO_COORD_FOUND'
+    OCR usa imagem PRETO E BRANCO salva temporariamente.
+    Frontend continua usando imagem colorida.
     """
+
+    # --------------------------------------------------------
+    # CRIAR IMAGEM BW TEMPORÁRIA
+    # --------------------------------------------------------
+    img_color = Image.open(image_path).convert("RGB")
+    img_bw = img_color.convert("L")
+
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        tmp_path = tmp.name
+        img_bw.save(tmp_path)
 
     buffer = io.StringIO()
     old_stdout = sys.stdout
@@ -57,15 +69,19 @@ def process_image(
             res = model.infer(
                 tokenizer,
                 prompt=prompt,
-                image_file=image_path,
+                image_file=tmp_path,  # ✅ path real
                 base_size=base_size,
                 image_size=image_size,
                 crop_mode=crop_mode,
                 save_results=False,
-                output_path=output_path  # ⚠️ OBRIGATÓRIO
+                output_path=output_path
             )
     finally:
         sys.stdout = old_stdout
+        try:
+            os.remove(tmp_path)  # 🧹 limpa arquivo temporário
+        except OSError:
+            pass
 
     raw = buffer.getvalue().strip() or str(res)
     text = normalize_text(raw)
